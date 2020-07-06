@@ -13,10 +13,10 @@ module.exports = gql`
   type Expense {
     id: ID!
     date: DateTime!
-    category: Category!
+    category: ID!
     value: Float!
     isNeeded: Boolean!
-    user: User!
+    user: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
   }
@@ -42,7 +42,30 @@ module.exports = gql`
   }
 
   type Mutation {
+    newCategory(description: String!): Category
+
+    updateCategory(id: ID!, description: String!): Category!
+    # deleteCategory
+
+    newExpense(
+      date: DateTime!
+      category: ID!
+      value: Float!
+      isNeeded: Boolean!
+    ): Expense
+
+    updateExpense(
+      id: ID!
+      date: DateTime
+      category: ID
+      value: Float
+      isNeeded: Boolean
+    ): Expense
+
+    deleteExpense(id: ID!): Boolean!
+
     signUp(username: String!, email: String!, password: String!): String!
+
     signIn(username: String, email: String, password: String!): String!
   }
 `;
