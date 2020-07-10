@@ -23,6 +23,34 @@ module.exports = {
       description: args.description,
     });
   },
+  updateCategory: async (parent, { id, description }, { models, user }) => {
+    if (!user) {
+      throw new AuthenticationError(
+        "Você precisa estar logado para realizar esta operação!"
+      );
+    }
+
+    const category = await models.Category.findById(id);
+    if (category && String(category.user) !== user.id) {
+      throw new ForbiddenError(
+        "Você não tem permissão para realizar esta operação!"
+      );
+    }
+
+    return await models.Category.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        $set: {
+          description,
+        },
+      },
+      {
+        new: true,
+      }
+    );
+  },
   newExpense: async (
     parent,
     { date, category, value, isNeeded },
@@ -41,6 +69,43 @@ module.exports = {
       value,
       isNeeded,
     });
+  },
+  updateExpense: async (
+    parent,
+    { id, date, category, value, isNeeded },
+    { models, user }
+  ) => {
+    if (!user) {
+      throw new AuthenticationError(
+        "Você precisa estar logado para realizar esta operação!"
+      );
+    }
+
+    const expense = await models.Expense.findById(id);
+    if (expense && String(expense.user) !== user.id) {
+      throw new ForbiddenError(
+        "Você não tem permissão para realizar esta operação!"
+      );
+    }
+
+    const $set = {};
+
+    if (date) $set["date"] = date;
+    if (category) $set["category"] = category;
+    if (value) $set["value"] = value;
+    if (isNeeded) $set["isNeeded"] = isNeeded;
+
+    return await models.Expense.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        $set,
+      },
+      {
+        new: true,
+      }
+    );
   },
   deleteExpense: async (parent, { id }, { models, user }) => {
     if (!user) {

@@ -6,6 +6,7 @@ module.exports = gql`
   type Category {
     id: ID!
     description: String!
+    user: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
   }
